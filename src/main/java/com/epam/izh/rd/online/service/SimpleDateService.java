@@ -1,5 +1,6 @@
 package com.epam.izh.rd.online.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +15,8 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String parseDate(LocalDate localDate) {
-        return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return localDate.format(formatter);
     }
 
     /**
@@ -25,7 +27,8 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public LocalDateTime parseString(String string) {
-        return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(string, formatter);
     }
 
     /**
@@ -37,7 +40,7 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String convertToCustomFormat(LocalDate localDate, DateTimeFormatter formatter) {
-        return null;
+        return localDate.format(formatter);
     }
 
     /**
@@ -47,7 +50,15 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getNextLeapYear() {
-        return 0;
+        int year = LocalDate.now().getYear();
+        do {
+            LocalDate lastDayOfYear = LocalDate.of(year, 12, 31);
+            int daysAmount = lastDayOfYear.getDayOfYear();
+            if (daysAmount == 366) {
+                return year;
+            }
+            year++;
+        } while (true);
     }
 
     /**
@@ -57,7 +68,9 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getSecondsInYear(int year) {
-        return 0;
+        LocalDateTime lastSecond = LocalDateTime.of(year + 1, 1, 1, 0, 0, 0);
+        LocalDateTime firstSecond = LocalDateTime.of(year, 1, 1, 0 , 0, 0);
+        return Duration.between(firstSecond, lastSecond).getSeconds();
     }
 
 
