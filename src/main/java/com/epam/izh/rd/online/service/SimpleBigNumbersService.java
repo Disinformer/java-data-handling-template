@@ -13,7 +13,9 @@ public class SimpleBigNumbersService implements BigNumbersService {
      */
     @Override
     public BigDecimal getPrecisionNumber(int a, int b, int range) {
-        return null;
+        BigDecimal dividend = new BigDecimal(a);
+        BigDecimal divisor = new BigDecimal(b);
+        return dividend.divide(divisor, range, BigDecimal.ROUND_HALF_UP);
     }
 
     /**
@@ -24,6 +26,16 @@ public class SimpleBigNumbersService implements BigNumbersService {
      */
     @Override
     public BigInteger getPrimaryNumber(int range) {
-        return null;
+        int index = 0;
+        BigInteger number = new BigInteger("1");
+        while (true) {
+            if (number.isProbablePrime(10)) {
+                if (index == range) {
+                    return number;
+                }
+                index++;
+            }
+            number = number.add(new BigInteger("1"));
+        }
     }
 }
