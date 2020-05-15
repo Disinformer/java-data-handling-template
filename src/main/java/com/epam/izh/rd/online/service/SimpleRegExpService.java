@@ -1,5 +1,11 @@
 package com.epam.izh.rd.online.service;
 
+import java.io.*;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 public class SimpleRegExpService implements RegExpService {
 
     /**
@@ -11,7 +17,24 @@ public class SimpleRegExpService implements RegExpService {
      */
     @Override
     public String maskSensitiveData() {
-        return null;
+        URL resource = getClass().getClassLoader().getResource("sensitive_data.txt");
+        File file = new File(resource.getFile());
+        String content = "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            content = reader.lines().collect(Collectors.joining());
+            Matcher matcher = Pattern.compile("\\d{4}\\s*\\d{4}\\s*\\d{4}\\s*\\d{4}").matcher(content);
+
+            while (matcher.find()) {
+                String sensitiveData = matcher.group();
+                String unSensitiveData = sensitiveData.replaceAll("\\s\\d{4}\\s*\\d{4}\\s*", " **** **** ");
+                content = content.replace(sensitiveData, unSensitiveData);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     /**
@@ -22,6 +45,19 @@ public class SimpleRegExpService implements RegExpService {
      */
     @Override
     public String replacePlaceholders(double paymentAmount, double balance) {
-        return null;
+        URL resource = getClass().getClassLoader().getResource("sensitive_data.txt");
+        File file = new File(resource.getFile());
+        String content = "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            content = reader.lines().collect(Collectors.joining());
+
+            content = content.replaceAll("\\$\\{(payment_amount)\\}", String.valueOf((long) paymentAmount));
+            content = content.replaceAll("\\$\\{(balance)\\}", String.valueOf((long) balance));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 }
